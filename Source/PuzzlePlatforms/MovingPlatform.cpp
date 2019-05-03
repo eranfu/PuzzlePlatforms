@@ -5,8 +5,8 @@
 
 AMovingPlatform::AMovingPlatform()
 {
-    PrimaryActorTick.bCanEverTick = true;
     SetMobility(EComponentMobility::Movable);
+    PrimaryActorTick.bCanEverTick = true;
 }
 
 void AMovingPlatform::Tick(float DeltaSeconds)
@@ -16,7 +16,9 @@ void AMovingPlatform::Tick(float DeltaSeconds)
     if (HasAuthority())
     {
         FVector Location = GetActorLocation();
-        Location += Velocity * DeltaSeconds;
+        const FVector TargetWorldLocation = GetTransform().TransformPosition(TargetLocation);
+        const FVector MoveDirection = (TargetWorldLocation - Location).GetSafeNormal();
+        Location += DeltaSeconds * Speed * MoveDirection;
         SetActorLocation(Location);
     }
 }
